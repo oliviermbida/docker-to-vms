@@ -192,6 +192,19 @@ When dealing with complex applications, it is a very good idea to understand how
 One skill a DevOps Engineer should definately have or learn is that of Build tools or systems for common programming languages.
 Choose a language and learn the build tools very well as they are the foundations of what libraries are needed to run the binaries inside your docker containers. 
 
+# Other useful docker commands
+
+You can start by extracting any docker container filesystem
+
+		ContainerID=$(docker run -d busybox /bin/true)
+		docker export -o $HOME/busybox.tar ${ContainerID}
+
+Change it locally and back to docker image with `import`
+
+		tar -xf busybox.tar -C $HOME/busybox
+		...
+		tar -C $HOME/busybox -c . | docker import - busybox
+
 # Conclusion
 
 With the steps above you can navigate from `Docker images to Debian bootable images and virtual machines`.
