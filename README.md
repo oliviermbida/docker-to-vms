@@ -44,7 +44,7 @@ Yes this maybe faster in building your image but there are issues with this appr
 
 - Maintainability of code. With each `FROM` you add, the code become difficult to maintain and understand.
 
-What the best practice should be is to build your own image from if you require more than one `FROM` in your `Dockerfile`.
+What the best practice should be is to build your own image if you require more than one `FROM` in your `Dockerfile`.
 
 In the following example, lets say I want to build a docker Ubuntu focal image.
 
