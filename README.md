@@ -192,6 +192,13 @@ When dealing with complex applications, it is a very good idea to understand how
 One skill a DevOps Engineer should definately have or learn is that of Build tools or systems for common programming languages.
 Choose a language and learn the build tools very well as they teach you the foundations of what libraries are needed to run the binaries inside your docker containers. 
 
+With the `hello` example a better `optimization` could be a `static library`
+
+`gcc -o hello hello.c -static`
+
+If this `hello` program was for example targeted for an embedded platform and glibc is too large, it makes sense to use a smaller static library.
+This could reduce the image size to 2MB or less.
+
 # Other useful docker commands
 
 You can start by extracting any docker container filesystem
