@@ -190,7 +190,7 @@ A successful DevOps Engineer has to know very well or take the time to understan
 When dealing with complex applications, it is a very good idea to understand how they are build, configured/run locally so that you are successful at automating them and know what you only need inside your docker images.
 
 One skill a DevOps Engineer should definately have or learn is that of Build tools or systems for common programming languages.
-Choose a language and learn the build tools very well as they are the foundations of what libraries are needed to run the binaries inside your docker containers. 
+Choose a language and learn the build tools very well as they teach you the foundations of what libraries are needed to run the binaries inside your docker containers. 
 
 # Other useful docker commands
 
