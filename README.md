@@ -116,6 +116,27 @@ For example install docker if you want docker in docker:
 	    docker-scan-plugin=0.17.0~ubuntu-focal \
 	    && docker --version
 
+Address the discrepancies between docker containers and linux virtual machines.
+
+- Linux VMs runs its init daemon as a process with PID 1.
+- Docker containers is shell or directly user-defined executable as a PID 1.
+
+For example if you are building a bootable ubuntu image or a virtual machine image you need the kernel in the `boot` folder
+
+	$HOME/focal/chroot/boot/vmlinuz*
+	$HOME/focal/chroot/boot/initrd*
+
+Since it is a docker container optimization it is not needed and other unused packages.
+
+Important to learn this skill of knowing what you only need in a docker container.
+Without docker installation and with unused packages lets compare the custom focal image with the official ubuntu:20.04 image.
+
+	REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+	focal        latest    e9e5ca8f9c58   11 minutes ago   113MB
+	ubuntu       20.04     a0ce5a295b63   2 weeks ago      72.8MB
+
+As you can see our custom focal image contains about 40MB of installed packages compared to the official ubuntu:20.04 image.
+
 Once you are done provisioning your environment `exit` and unmount if you needed it.
 
 # 5. Docker image
