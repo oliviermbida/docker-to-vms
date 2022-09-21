@@ -146,7 +146,7 @@ Without docker installation and with unused packages lets compare the custom foc
 
 As you can see our custom focal image contains about 40MB of installed packages compared to the official ubuntu:20.04 image.
 
-Once you are done provisioning your environment `exit` and unmount if you needed it.
+Once you are done configuring your environment `exit` and unmount if you needed it.
 
 # 5. Docker image
 
