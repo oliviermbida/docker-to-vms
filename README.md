@@ -118,6 +118,15 @@ For example install docker if you want docker in docker:
 
 Address the discrepancies between docker containers and linux virtual machines.
 
+	USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+	root           1  0.0  0.1 168900 12308 ?        Ss   Sep17   1:54 /sbin/init sp
+	root           2  0.0  0.0      0     0 ?        S    Sep17   0:00 [kthreadd]
+	
+	USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+	root           1  0.0  0.0   4248  3092 pts/0    Ss   09:38   0:00 /bin/bash
+	root        7062  0.0  0.0  20252  4824 ?        S    10:22   0:00 /lib/systemd/
+	root       10152  0.0  0.0   5900  2852 pts/0    R+   13:25   0:00 ps aux
+
 - Linux VMs runs its init daemon as a process with PID 1.
 - Docker containers is shell or directly user-defined executable as a PID 1.
 
