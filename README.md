@@ -209,7 +209,65 @@ The `True` sense of `optimization` will mean reducing the `gcc` image size itsel
 The trick here is to know what you want inside the docker image.
 In this specific example it comes down to build tools for the `gcc` image and the C shared runtime library for the `busybox:glibc` image. One is needed to build the `hello` program and the later to run it. Since you don't need build tools to run `hello` a smaller image with just what is needed to run `hello` is pulled.
 
+You can also start by looking at what is inside the docker official images for example 
+
+[official ubuntu:20.04 image](https://github.com/docker-library/buildpack-deps/blob/master/ubuntu/focal/Dockerfile)
+
+[official gcc10 image](https://github.com/docker-library/gcc/blob/master/10/Dockerfile)
+
+You can see that the `gcc` base image is actually a debian buster image
+
+[official debian buster](https://github.com/docker-library/buildpack-deps/blob/master/debian/buster/Dockerfile)
+
+And this image has quite a few packages which are not needed for the `hello` program even when building it.
+
+This really shows why the `Best practice should be build your own image` and choose your own packages.
+
 You should apply the same logic with your custom images using the steps above for the base.
+
+# Docker layers
+
+This is where I will get a lot of you screaming your love for docker and justification for `Docker's Best Practices`.
+
+	Using default tag: latest
+	latest: Pulling from library/gcc
+	23858da423a6: Pull complete 
+	326f452ade5c: Pull complete 
+	a42821cd14fb: Pull complete 
+	8471b75885ef: Pull complete 
+	8ffa7aaef404: Pull complete 
+	0dbd3d90c419: Pull complete 
+	c8360ea64db4: Pull complete 
+	65bba72ff1de: Pull complete 
+	a615a380ba22: Pull complete 
+	Digest: sha256:4f8717c532f9c07d6258e3d17faf0df97ffe0c18628d7769c1e25ca20c237a1e
+	Status: Downloaded newer image for gcc:latest
+	docker.io/library/gcc:latest
+
+A quick recap of what we are talking about here. Each layer represents an instruction in the image’s Dockerfile and the docker engine will pull/push them accordingly.
+
+Lets take our custom focal image above which is 112MB and push it to dockerhub
+
+	The push refers to repository [docker.io/*****/focal]
+	0a56bfe65fa4: Pushed 
+	latest: digest: sha256:c4266a3768216451ab05a21b343740b62db219888bcf829db504e3b32b5b1bd9 size: 528
+
+From dockerhub
+
+	*****/focal:latest
+	DIGEST:sha256:c4266a3768216451ab05a21b343740b62db219888bcf829db504e3b32b5b1bd9
+	OS/ARCH
+	linux/amd64
+	COMPRESSED SIZE 
+	56.48 MB
+	LAST PUSHED
+	4 minutes ago by *****
+
+Can you notice any thing? Yes, our custom focal image has been compressed to 56.48MB
+
+Yes, there is an advantage in docker layering of your `Dockerfile` but if there are many layers which you don't need then that advantage is wasted.
+Taking the example of the `gcc` Debian buster base image above, there are quite a few packages which are unused by our simple `hello` example and it is common to find that in complex projects. Learn the skills to build your own images and you can then use `FROM` your own image to take advantage of docker's layers.
+
 
 # DevOps
 
