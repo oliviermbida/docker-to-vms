@@ -5,6 +5,8 @@
 
 [Docker's Best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 
+[Multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
+
 They recommend that you:
 
 - Use multi-stage builds
