@@ -244,7 +244,7 @@ This is where I will get a lot of you screaming your love for docker and justifi
 	Status: Downloaded newer image for gcc:latest
 	docker.io/library/gcc:latest
 
-A quick recap of what we are talking about here. Each layer represents an instruction in the image’s Dockerfile and the docker engine will pull/push them accordingly.
+A quick recap of what we are talking about here. Each layer represents an instruction (i.e `RUN` or `COPY`) in the image’s Dockerfile and the docker engine will pull/push them accordingly.
 
 Lets take our custom focal image above which is 112MB and push it to dockerhub
 
