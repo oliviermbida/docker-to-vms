@@ -289,6 +289,19 @@ With the `hello` example a better `optimization` could be a `static library`
 If this `hello` program was for example targeted for an embedded platform and glibc is too large, it makes sense to use a smaller static library.
 This could reduce the image size to 2MB or less.
 
+# Multi-platform images
+
+I started with the claim that if you have more than one `From` in your `Dockerfile` you have a problem. The steps above demonstrate why but there is an exception when it will make sense.
+
+	FROM multiarch/qemu-user-static:x86_64-aarch64 as qemu
+	FROM arm64v8/ubuntu
+	COPY --from=qemu /usr/bin/qemu-aarch64-static /usr/bin
+
+A brief recap of what you see in this `Dockerfile`. What we want to achieve here is run `arm64v8` platform using qemu emulator.
+This allow us to build/run other supported platforms other than amd64 which I use for the ubuntu development environment for all the steps above.
+The context here is very different from `multi-stage builds for docker image size optimisation`.
+You will still worry about what's in this image `arm64v8/ubuntu` and if there are packages you don't need if `image size optimisation` was your concern.
+
 # Other useful docker commands
 
 You can start by extracting any docker container filesystem
