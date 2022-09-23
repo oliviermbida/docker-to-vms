@@ -7,6 +7,15 @@
 
 [Multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
 
+There are two claims from the `Best practices` I will put to the test and see if it stands up to scrutiny.
+
+
+- "Multi-stage builds are useful to anyone who has struggled to optimize Dockerfiles while keeping them easy to read and maintain."
+
+- "Multi-stage builds allow you to drastically reduce the size of your final image, without struggling to reduce the number of intermediate layers and files"
+
+They say `drastically reduce the size of your final image`. Which means `image size optimisation`.
+
 They recommend that you:
 
 - Use multi-stage builds
