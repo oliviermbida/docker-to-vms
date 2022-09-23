@@ -301,6 +301,16 @@ A brief recap of what you see in this `Dockerfile`. What we want to achieve here
 This allow us to build/run other supported platforms other than amd64 which I use for the ubuntu development environment for all the steps above.
 The context here is very different from `multi-stage builds for docker image size optimisation`.
 You will still worry about what's in this image `arm64v8/ubuntu` and if there are packages you don't need if `image size optimisation` was your concern.
+Lets look inside the images in our example `Dockerfile`
+
+- [multiarch/qemu-user-static](https://github.com/multiarch/qemu-user-static/blob/master/containers/latest/Dockerfile)
+
+As you can see the base image is `FROM busybox` which itself we know from above is about 1.5MB and the rest are tiny scripts to configure the hosts `binfmt_misc` for the target platform.
+If we really want to be pure and stick to one `FROM` in our `Dockerfile` the `binfmt_misc` scripts can be easily implemented before running a different platform.
+
+- [Qemu](https://github.com/multiarch/qemu-user-static)
+- [Buildx](https://docs.docker.com/build/building/multi-platform/)
+- [binfmt_misc](https://github.com/multiarch/qemu-user-static/blob/master/containers/latest/register.sh)
 
 # Other useful docker commands
 
