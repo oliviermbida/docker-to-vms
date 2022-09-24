@@ -317,6 +317,31 @@ Lets look inside the images in our example `Dockerfile`
 As you can see the base image is `FROM busybox` which itself we know from above is about 1.5MB and the rest are tiny scripts to configure the hosts `binfmt_misc` for the target platform.
 If we really want to be pure and stick to one `FROM` in our `Dockerfile` the `binfmt_misc` scripts can be easily implemented before running a different platform.
 
+For our custom images you will bootstrap your base for the arm64 platform with 
+
+	sudo debootstrap --arch=arm64 --foreign --variant=minbase focal $HOME/arm64/chroot
+	
+You will need additional pre-requisites:
+
+	binfmt-support
+	qemu-user-static
+	
+Otherwise you get this error when you try to chroot into the arm64 environment:
+
+	chroot: failed to run command ‘/bin/bash’: Exec format error
+	
+`Exec format error` is a platform issue which you resolve with this:
+
+	sudo cp /usr/bin/qemu-arm-static $HOME/arm64/chroot/usr/bin/
+
+You can then access the arm64 environment:
+
+	sudo chroot $HOME/arm64/chroot
+	
+And if you have trouble installing packages because of internet connection you can also copy host files from this folder
+
+	/run/systemd/resolve/* to $HOME/arm64/chroot/etc/
+	
 - [Qemu](https://github.com/multiarch/qemu-user-static)
 - [Buildx](https://docs.docker.com/build/building/multi-platform/)
 - [binfmt_misc](https://github.com/multiarch/qemu-user-static/blob/master/containers/latest/register.sh)
