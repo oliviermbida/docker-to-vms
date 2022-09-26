@@ -346,7 +346,72 @@ And if you have trouble installing packages because of internet connection you c
 - [Buildx](https://docs.docker.com/build/building/multi-platform/)
 - [binfmt_misc](https://github.com/multiarch/qemu-user-static/blob/master/containers/latest/register.sh)
 
-# Other useful docker commands
+# Other Dockerfile pitfalls
+
+Generally avoid scripting a `Dockerfile` for the following reasons using this example:
+
+[Bash script Dockerfile](https://github.com/multiarch/qemu-user-static/blob/master/run.sh)
+
+	for file in ${releases_dir}*
+	do
+	    if [[ $file =~ qemu-(.+)-static ]]; then
+		to_arch=${BASH_REMATCH[1]}
+		if [ "$from_arch" != "$to_arch" ]; then
+		    work_dir="${out_dir}/${from_arch}_qemu-${to_arch}"
+		    mkdir -p "${work_dir}"
+		    cp -p "${releases_dir}qemu-${to_arch}-static" ${work_dir}
+		    cp -p "${work_dir}/qemu-${to_arch}-static" "${out_dir}/latest/"
+		    cat > ${work_dir}/Dockerfile -<<EOF
+	FROM scratch
+	COPY qemu-${to_arch}-static /usr/bin/
+	EOF
+		    docker build -t ${DOCKER_REPO}:$from_arch-$to_arch-${TAG_VER} ${work_dir}
+		    for target in  "${DOCKER_REPO}:$from_arch-$to_arch" \
+			"${DOCKER_REPO}:$to_arch-${TAG_VER}" \
+			"${DOCKER_REPO}:$to_arch" ; do
+			docker tag ${DOCKER_REPO}:$from_arch-$to_arch-${TAG_VER} ${target}
+		    done
+		    rm -rf "${work_dir}"
+		fi
+	    fi
+	done
+
+	docker build -t ${DOCKER_REPO}:${TAG_VER} ${out_dir}/latest
+	docker tag ${DOCKER_REPO}:${TAG_VER} ${DOCKER_REPO}:latest
+	docker build -t ${DOCKER_REPO}:register ${out_dir}/register
+
+What the above code snipet wants to achieve is to auto generate the target platform `Dockerfile` when the `$from_arch` platform does not match the `$to_arch` platform and build a tagged version ensuring the target `binfmt_misc` is registered. There are issues with this approach:
+
+- Verification
+- Maintainabilty of code
+
+This code snipet can simply be achieved with a variable or `ENV` set to `$to_arch`
+
+	cat > ${work_dir}/Dockerfile -<<EOF
+	FROM scratch
+	COPY qemu-${to_arch}-static /usr/bin/
+	EOF
+
+For verification, your `Dockerfile` has to be independent of the script verifying it. This is true for both `Static and Dynamic verification`.
+
+Our example `Dockerfile` above is a simple one but if this was several lines of code which most in complex projects are this will be a nightmare for maintainabilty of code and difficult to understand.
+
+Generally try to keep to these rules:
+
+- Dockerfile
+- Run lint or implement any static verification
+- Scan security vulnerabilites and dependencies especially if you don't follow the one `FROM` rule. Another reason you should build your own images.
+- Dynamic verification to ensure requirements are met.
+- It is also important to document `exceptions and failures` because this is the basis of a learning process for troubleshooting.
+
+It is worth mentioning that our example `Dockerfile` taken from the `qemu-user-static` github repository is now a `[DEPRECATED]` feature
+
+	The concept of "compatible images" are deprecated because multiarch/qemu-user-static can build 
+	and run standard multi-architecture container images without the multiarch compatible images now.
+
+In other words they found a better way of implementation.
+
+# Useful docker commands
 
 You can start by extracting any docker container filesystem
 
