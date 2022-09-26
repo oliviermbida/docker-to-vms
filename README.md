@@ -394,7 +394,7 @@ This code snipet can simply be achieved with a variable or `ENV` set to `$to_arc
 
 For verification, your `Dockerfile` has to be independent of the script verifying it. This is true for both `Static and Dynamic verification`.
 
-Our example `Dockerfile` above is a simple one but if this was several lines of code which most in complex projects are this will be a nightmare for maintainabilty of code and difficult to understand.
+Our example `Dockerfile` above is a simple one but if this was several lines of code which in complex projects are this will be a nightmare for maintainabilty of code and difficult to understand.
 
 Generally try to keep to these rules:
 
