@@ -153,7 +153,10 @@ You will get a config prompt
        ubuntu-gnome-desktop \
        ubuntu-gnome-wallpapers
  
- You can install whatever packages you may need.
+It will also install non userland tools like memtest86 which is used by the bios.
+You will get other Package configuration screens, select as required.
+ 
+You can also install whatever packages you may need.
 
 [More on snapd](https://github.com/snapcore/snapd)
 
@@ -186,6 +189,7 @@ And other unused.
     rm -rf /tmp/* ~/.bash_history
     umount /proc
     umount /sys
+    umount /dev/pts
     export HISTSIZE=0
 
 # 17. Exit environment
@@ -193,9 +197,113 @@ And other unused.
     exit
     sudo umount $HOME/ubuntu20/chroot/dev
     sudo umount $HOME/ubuntu20/chroot/run
+    
+* Some devices may still be in busy state
 
+You can now see how far we are from the initial `ubuntu:20.04` docker image size of 72.8MB
+
+    sudo du -sh $HOME/ubuntu20/chroot
+    
+    4.1G	/home/*****/ubuntu20/chroot
+    
 The main discrepancies between a docker image and linux-live image are almost done with the steps above.
 Now lets concentrate on the initial boot process i.e creating a bootable image.
 
+# 1. Prerequisites
 
+If you are familiar with the filesystem of ubuntu-live bootable image you will know the folders `casper, isolinux, install and others`
+
+    cd $HOME/ubuntu20
+    sudo mkdir -p image/{casper,isolinux,install}
+
+# 2. Kernel
+
+    sudo cp chroot/boot/vmlinuz-**-**-generic image/casper/vmlinuz
+    sudo cp chroot/boot/initrd.img-**-**-generic image/casper/initrd
+
+# 3. BIOS Memory Test
+
+    sudo cp chroot/boot/memtest86+.bin image/install/memtest86+
+
+# 4. UEFI Memory Test
+
+    sudo wget --progress=dot https://www.memtest86.com/downloads/memtest86-usb.zip -O image/install/memtest86-usb.zip && \
+    sudo sh -c "unzip -p image/install/memtest86-usb.zip memtest86-usb.img > image/install/memtest86" && \
+    sudo rm -f image/install/memtest86-usb.zip
+
+# 5. GRUB Bootloader menu items
+
+    sudo touch image/ubuntu && \
+    sudo sh -c 'cat <<EOF > image/isolinux/grub.cfg
+
+    search --set=root --file /ubuntu
+
+    insmod all_video
+
+    set default="0"
+    set timeout=30
+
+    menuentry "Try Ubuntu20 without installing" {
+       linux /casper/vmlinuz boot=casper nopersistent toram quiet splash ---
+       initrd /casper/initrd
+    }
+
+    menuentry "Install Ubuntu20" {
+       linux /casper/vmlinuz boot=casper only-ubiquity quiet splash ---
+       initrd /casper/initrd
+    }
+
+    menuentry "Check disc for errors" {
+       linux /casper/vmlinuz boot=casper integrity-check quiet splash ---
+       initrd /casper/initrd
+    }
+
+    menuentry "Test memory Memtest86+ (BIOS)" {
+       linux16 /install/memtest86+
+    }
+
+    menuentry "Test memory Memtest86 (UEFI, it may take a while)" {
+       insmod part_gpt
+       insmod search_fs_uuid
+       insmod chain
+       loopback loop /install/memtest86
+       chainloader (loop,gpt1)/efi/boot/BOOTX64.efi
+    }
+    EOF'
+
+# 6. Manifest of packages
+
+    sudo chroot chroot dpkg-query -W --showformat='${Package} ${Version}\n' | sudo tee image/casper/filesystem.manifest && \
+    sudo cp -v image/casper/filesystem.manifest image/casper/filesystem.manifest-desktop && \
+    sudo sed -i '/ubiquity/d' image/casper/filesystem.manifest-desktop && \
+    sudo sed -i '/casper/d' image/casper/filesystem.manifest-desktop && \
+    sudo sed -i '/discover/d' image/casper/filesystem.manifest-desktop && \
+    sudo sed -i '/laptop-detect/d' image/casper/filesystem.manifest-desktop && \
+    sudo sed -i '/os-prober/d' image/casper/filesystem.manifest-desktop
+
+The output is found here: `image/casper/filesystem.manifest` if you want to go through the list of packages.
+
+# 7. Compress the filesystem
+
+    sudo mksquashfs chroot image/casper/filesystem.squashfs && \
+    sudo sh -c "printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size"
+
+From above we know it is 4.1GB.
+
+    Parallel mksquashfs: Using 4 processors
+    Creating 4.0 filesystem on image/casper/filesystem.squashfs, block size 131072.
+    [========================================================- ] 117104/117120  99%
+    Unrecognised xattr prefix system.posix_acl_access
+
+    Unrecognised xattr prefix system.posix_acl_default
+    [=========================================================\] 117120/117120 100%
+
+    Exportable Squashfs 4.0 filesystem, gzip compressed, data block size 131072
+        compressed data, compressed metadata, compressed fragments,
+        compressed xattrs, compressed ids
+        duplicates are removed
+    Filesystem size 1500702.45 Kbytes (1465.53 Mbytes)
+        37.98% of uncompressed filesystem size (3951517.65 Kbytes)
+
+It has been compressed to 1.5GB
 
