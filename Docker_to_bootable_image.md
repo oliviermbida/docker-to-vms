@@ -305,5 +305,77 @@ From above we know it is 4.1GB.
     Filesystem size 1500702.45 Kbytes (1465.53 Mbytes)
         37.98% of uncompressed filesystem size (3951517.65 Kbytes)
 
-It has been compressed to 1.5GB
+# 8. GRUB UEFI boot image
 
+    cd $HOME/ubuntu20/image
+    sudo grub-mkstandalone \
+       --format=x86_64-efi \
+       --output=isolinux/bootx64.efi \
+       --locales="" \
+       --fonts="" \
+       "boot/grub/grub.cfg=isolinux/grub.cfg"
+
+# 9. FAT16 boot image
+
+    (
+       sudo sh -c "cd isolinux && \
+       dd if=/dev/zero of=efiboot.img bs=1M count=10 && \
+       mkfs.vfat efiboot.img && \
+       LC_CTYPE=C mmd -i efiboot.img efi efi/boot && \
+       LC_CTYPE=C mcopy -i efiboot.img ./bootx64.efi ::efi/boot/"
+    )
+
+# 10. BIOS boot image
+
+    sudo grub-mkstandalone \
+       --format=i386-pc \
+       --output=isolinux/core.img \
+       --install-modules="linux16 linux normal iso9660 biosdisk memdisk search tar ls" \
+       --modules="linux16 linux normal iso9660 biosdisk search" \
+       --locales="" \
+       --fonts="" \
+       "boot/grub/grub.cfg=isolinux/grub.cfg" && \
+    sudo sh -c "cat /usr/lib/grub/i386-pc/cdboot.img isolinux/core.img > isolinux/bios.img
+    " && \
+    sudo /bin/bash -c "(find . -type f -print0 | xargs -0 md5sum | grep -v -e 'md5sum.txt' -e 'bios.img' -e 'efiboot.img' > md5sum.txt)"
+
+# 11. ISO bootable image
+
+    sudo xorriso \
+       -as mkisofs \
+       -iso-level 3 \
+       -full-iso9660-filenames \
+       -volid "Ubuntu20_04" \
+       -output "../ubuntu20.iso" \
+       -eltorito-boot boot/grub/bios.img \
+          -no-emul-boot \
+          -boot-load-size 4 \
+          -boot-info-table \
+          --eltorito-catalog boot/grub/boot.cat \
+          --grub2-boot-info \
+          --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
+       -eltorito-alt-boot \
+          -e EFI/efiboot.img \
+          -no-emul-boot \
+       -append_partition 2 0xef isolinux/efiboot.img \
+       -m "isolinux/efiboot.img" \
+       -m "isolinux/bios.img" \
+       -graft-points \
+          "/EFI/efiboot.img=isolinux/efiboot.img" \
+          "/boot/grub/bios.img=isolinux/bios.img" \
+          "."
+ # 12. USB bootable image
+ 
+    cd $HOME/ubuntu20
+    sudo dd if=ubuntu20.iso of=/dev/sdc1 status=progress oflag=sync
+ 
+* Presuming your usb flash drive is on `/dev/sdc1`. Verify with `df` or other commands.
+
+# Conclusion
+
+We have walked back from docker image to a bootable ubuntu-live image. 
+We learned how to create our custom docker images in the `README` and also challenged `Docker's Best practices`. 
+You may wonder why would you take a docker image and restore it to a bootable linux image? 
+There are use cases you will want to do so.
+This will be the next topic which is on `Software Development & Security Standards` such as DO-178C and its supplements. The issue is `traceability` which such standards make it a `requirement`.
+It is also the main reason I started the `README` with the claim that if you have more than one `FROM` in your `Dockerfile`, you have a problem.
