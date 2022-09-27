@@ -179,14 +179,14 @@ And other unused.
     dpkg-reconfigure network-manager
 
 # 16. Cleanup
-truncate -s 0 /etc/machine-id
-rm /sbin/initctl
-dpkg-divert --rename --remove /sbin/initctl
-apt-get clean
-rm -rf /tmp/* ~/.bash_history
-umount /proc
-umount /sys
-export HISTSIZE=0
+    truncate -s 0 /etc/machine-id
+    rm /sbin/initctl
+    dpkg-divert --rename --remove /sbin/initctl
+    apt-get clean
+    rm -rf /tmp/* ~/.bash_history
+    umount /proc
+    umount /sys
+    export HISTSIZE=0
 
 # 17. Exit environment
 
