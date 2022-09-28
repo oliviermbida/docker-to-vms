@@ -182,6 +182,7 @@ And other unused.
     dpkg-reconfigure network-manager
 
 # 16. Cleanup
+
     truncate -s 0 /etc/machine-id
     rm /sbin/initctl
     dpkg-divert --rename --remove /sbin/initctl
@@ -191,6 +192,8 @@ And other unused.
     umount /sys
     umount /dev/pts
     export HISTSIZE=0
+
+* You will need to take extra care of deprovisioning the environment of any sensitive data if this is for production.
 
 # 17. Exit environment
 
@@ -385,6 +388,26 @@ Then run this if the image is still in the folder from the steps above
 * You can choose your own memory size `-m 2048`
 
 ![Qemu](./qemu.png)
+
+# Ubuntu virtual machine for Azure
+
+You can now apply these skills to create an image to boot a virtual machine.
+For our specific ubuntu focal example you could start by downloading the Azure's image:
+
+- [ubuntu-20.04-server-cloudimg-amd64-azure.vhd.tar.gz](https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-azure.vhd.tar.gz)
+
+- [ubuntu-20.04-server-cloudimg-amd64-azure.vhd.manifest](https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-azure.vhd.manifest)
+
+- [Azure images](https://cloud-images.ubuntu.com/releases/focal/release/)
+
+And move the contents to an empty `$HOME/ubuntu20/chroot` directory.
+Then access the environment following the steps above.
+Do not modify the configuration detailed in the links below as they are vital for using the image with Azure.
+
+- [Azure VHDs](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu)
+
+- [Upload a VHD to Azure](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-upload-vhd-to-managed-disk-cli)
+
 
 # Conclusion
 
