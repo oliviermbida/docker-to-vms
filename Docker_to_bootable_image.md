@@ -392,17 +392,6 @@ Then run this if the image is still in the folder from the steps above
 # Ubuntu virtual machine for Azure
 
 You can now apply these skills to create an image to boot a virtual machine.
-For our specific ubuntu focal example you could start by downloading the Azure's image:
-
-- [ubuntu-20.04-server-cloudimg-amd64-azure.vhd.tar.gz](https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-azure.vhd.tar.gz)
-
-- [ubuntu-20.04-server-cloudimg-amd64-azure.vhd.manifest](https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-azure.vhd.manifest)
-
-- [Azure images](https://cloud-images.ubuntu.com/releases/focal/release/)
-
-And move the contents to an empty `$HOME/ubuntu20/chroot` directory.
-Then access the environment following the steps above.
-Do not modify the configuration detailed in the links below as they are vital for using the image with Azure.
 
 - [Azure VHDs](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu)
 
