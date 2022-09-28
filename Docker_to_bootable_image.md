@@ -393,6 +393,8 @@ Then run this if the image is still in the folder from the steps above
 
 You can now apply these skills to create an image to boot a virtual machine.
 
+- [Create generic image](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-generic)
+
 - [Azure VHDs](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu)
 
 - [Upload a VHD to Azure](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-upload-vhd-to-managed-disk-cli)
