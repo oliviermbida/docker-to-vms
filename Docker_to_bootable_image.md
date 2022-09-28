@@ -371,6 +371,21 @@ From above we know it is 4.1GB.
  
 * Presuming your usb flash drive is on `/dev/sdc1`. Verify with `df` or other commands.
 
+# 13. Test bootable image
+
+We will use `Qemu` to test the `ISO` image. First install it with this command for amd64 platform
+
+    sudo apt-get install -y qemu-system-x86-64
+    
+Then run this if the image is still in the folder from the steps above
+
+    cd $HOME/ubuntu20 && \
+    qemu-system-x86_64 -boot d -cdrom ubuntu20.iso -m 2048
+
+* You can choose your own memory size `-m 2048`
+
+![Qemu](./qemu.png)
+
 # Conclusion
 
 We have walked back from docker image to a bootable ubuntu-live image. 
