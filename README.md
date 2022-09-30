@@ -296,7 +296,9 @@ With the `hello` example a better `optimization` could be a `static library`
 `gcc -o hello hello.c -static`
 
 If this `hello` program was for example targeted for an embedded platform and glibc is too large, it makes sense to use a smaller static library.
-This could reduce the image size to 2MB or less.
+This could reduce the image size to 2MB or less. Care must be taken to balance the need of `image size optimisation` with system performance for example if you have an optimised shared library to reduced the cost of making `system calls`.
+
+- [Vdso](https://manpages.ubuntu.com/manpages/focal/man7/vdso.7.html)
 
 # Multi-platform images
 
