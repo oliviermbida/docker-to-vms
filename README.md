@@ -324,7 +324,7 @@ For our custom images you will bootstrap your base for the arm64 platform with
 	sudo debootstrap --arch=arm64 --foreign --variant=minbase focal $HOME/arm64/chroot
 	or
 	wget http://cdimage.ubuntu.com/ubuntu-base/releases/20.04/release/ubuntu-base-20.04.1-base-arm64.tar.gz
-	sudo tar -xpf ubuntu-base-20.04.1-base-arm64.tar.gz -C $HOME/arm64/chroot
+	sudo sh -c "tar -xpf ubuntu-base-20.04.1-base-arm64.tar.gz -C $HOME/arm64/chroot"
 	
 You will need additional pre-requisites:
 
